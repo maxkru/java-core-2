@@ -1,18 +1,18 @@
 public class MyArrayDataException extends Exception {
 
-    private int i, j;
+    private int firstIndex, secondIndex;
 
-    public MyArrayDataException(int i, int j) {
-        super("Incorrect data in [" + i + "][" + j + "]");
-        this.i = i;
-        this.j = j;
+    public MyArrayDataException(int firstIndex, int secondIndex) {
+        super("Incorrect data in [" + firstIndex + "][" + secondIndex + "]");
+        this.firstIndex = firstIndex;
+        this.secondIndex = secondIndex;
     }
 
-    public int getI() {
-        return i;
+    public int getFirstIndex() {
+        return firstIndex;
     }
 
-    public int getJ() {
-        return j;
+    public int getSecondIndex() {
+        return secondIndex;
     }
 }

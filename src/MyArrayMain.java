@@ -35,8 +35,8 @@ public class MyArrayMain {
         } catch (MyArraySizeException e) {
             System.out.println("Некорректный размер массива");
         } catch (MyArrayDataException e) {
-            System.out.println("В ячейке [" + e.getI() + "][" + e.getJ() + "] строка, не приводимая к int.");
-            System.out.println("Содержимое ячейки: " + testArr[e.getI()][e.getJ()]);
+            System.out.println("В ячейке [" + e.getFirstIndex() + "][" + e.getSecondIndex() + "] строка, не приводимая к int.");
+            System.out.println("Содержимое ячейки: " + testArr[e.getFirstIndex()][e.getSecondIndex()]);
         }
     }
 
