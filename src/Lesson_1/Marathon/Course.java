@@ -1,12 +1,10 @@
 package Lesson_1.Marathon;
 
 public class Course {
-    private Obstacle[] obstacles = new Obstacle[5];
+    private Obstacle[] obstacles;
 
     Course(Obstacle... obstacles) {
-        for (int i = 0; i < obstacles.length; i++) {
-            this.obstacles[i] = obstacles[i];
-        }
+        this.obstacles = obstacles;
     }
 
     public void doIt(Team team) {

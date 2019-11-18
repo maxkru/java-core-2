@@ -2,13 +2,11 @@ package Lesson_1.Marathon;
 
 public class Team {
     private String name;
-    Competitor[] competitors = new Competitor[4];
+    private Competitor[] competitors;
 
     public Team(String name, Competitor... competitors) {
         this.name = name;
-        for (int i = 0; i < competitors.length; i++) {
-            this.competitors[i] = competitors[i];
-        }
+        this.competitors = competitors;
     }
 
     public void showResults() {
