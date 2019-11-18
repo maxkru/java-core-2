@@ -1,4 +1,4 @@
-public class MyArraySizeException extends Exception { // TODO: really Exception?
+public class MyArraySizeException extends Exception { 
 
     public MyArraySizeException(String message) {
         super(message);
