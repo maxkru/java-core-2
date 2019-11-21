@@ -31,11 +31,13 @@ public class Lesson3Main {
         for (Map.Entry<String, Integer> entry : treeMap.entrySet())
             System.out.println(entry.getKey() + ": " + entry.getValue());
 
-        PhoneBook phoneBook = new PhoneBook();
+        PhoneBook phoneBook = new PhoneBook(", ");
+
         phoneBook.add("Иванов", "+79012345678", "+79123456789");
         phoneBook.add("Иванов", "+79123456789");
         phoneBook.add("Петров", "+79123456789");
         phoneBook.add("Сидоров");   // допустимо добавлять имя, не добавляя номера
+
         System.out.println("Андреев: " + phoneBook.get("Андреев"));
         System.out.println("Петров: " + phoneBook.get("Петров"));
         System.out.println("Сидоров: " + phoneBook.get("Сидоров"));

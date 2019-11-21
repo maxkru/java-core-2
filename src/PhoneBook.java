@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class PhoneBook {
-    public static final String NUMBER_SEPARATOR = ", ";
 
+    private String numberSeparator; // то, чем будут разделяться номера в get(name)
     private HashMap<String, HashSet<String>> book;
 
-    public PhoneBook() {
+    public PhoneBook(String numberSeparator) {
         this.book = new HashMap<>();
+        this.numberSeparator = numberSeparator;
     }
 
     public void add(String name, String... numbers) {
@@ -23,7 +24,7 @@ public class PhoneBook {
     public String get(String name) {
         // возвращает null, если имени нет в книге
         // возвращает "", если имя есть в книге, но нет номеров для него
-        // иначе возвращает строку из номеров, разделённых ", " (в конце строки ", " нет)
+        // иначе возвращает строку из номеров, разделённых numberSeparator (в конце строки numberSeparator нет)
 
         StringBuilder result = null;
 
@@ -33,14 +34,21 @@ public class PhoneBook {
             HashSet<String> numbers = book.get(name);
             Iterator<String> iterator = numbers.iterator();
             while(iterator.hasNext()) {
-                result.append(iterator.next()).append(NUMBER_SEPARATOR);
+                result.append(iterator.next()).append(numberSeparator);
             }
 
-            if(result.length()>0)
-                result.delete(result.length()-NUMBER_SEPARATOR.length(), result.length()-NUMBER_SEPARATOR.length()+1);
+            if(result.length()>0 && numberSeparator.length() > 0)
+                result.delete(result.length() - numberSeparator.length(), result.length() - numberSeparator.length() + 1);
         }
 
         return (result == null ? null : result.toString());
     }
 
+    public String getNumberSeparator() {
+        return numberSeparator;
+    }
+
+    public void setNumberSeparator(String numberSeparator) {
+        this.numberSeparator = numberSeparator;
+    }
 }
