@@ -10,6 +10,6 @@ public class PasswordRegExp {
 
     static boolean checkPasswordValidity(String password) {
         // пароль длиной >= 8, состоит из букв и цифр. Минимум 1 цифра, 1 строчная и 1 прописная
-        return Pattern.matches("^(?=.*\\d)(?=.*\\p{Lower})(?=.*\\p{Upper})[\\w[^_]]{8,}$", password);
+        return Pattern.matches("^(?=.*\\d)(?=.*\\p{Lower})(?=.*\\p{Upper})[\\d\\p{Lower}\\p{Upper}]{8,}$", password);
     }
 }
