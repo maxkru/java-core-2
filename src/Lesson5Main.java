@@ -5,8 +5,7 @@ public class Lesson5Main {
 
     public static void main(String[] args) {
         float[] arr = new float[size];
-        unParallelled(arr);
-        parallelled(arr, 4);
+        parallelled(arr,3);
     }
 
     private static void unParallelled(float[] arr) {
@@ -21,8 +20,11 @@ public class Lesson5Main {
     }
 
     private static void parallelled(float[] arr, int nOfThreads)  {
+        if (arr.length % nOfThreads != 0)
+            throw new IllegalArgumentException("\'nOfThreads\' must divide \'arr.length\' without remainder");
+
         Arrays.fill(arr, 1.0f);
-        int h = size/nOfThreads;
+        int h = arr.length/nOfThreads;
         long a = System.currentTimeMillis();
         float[][] aParts = new float[nOfThreads][h];
         Thread[] threads = new Thread[nOfThreads];
