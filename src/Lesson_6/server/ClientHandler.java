@@ -17,7 +17,7 @@ public class ClientHandler {
             this.serv = serv;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
-
+            ClientHandler thisClient = this;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -26,6 +26,8 @@ public class ClientHandler {
                             String msg = in.readUTF();
                             if (msg.equals("/end")) {
                                 out.writeUTF("/serverClosed");
+                                thisClient.remove();
+                                System.out.println("Клиент отключился!");
                                 break;
                             }
                             serv.broadcastMsg(msg);
@@ -62,5 +64,9 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean remove() {
+        return serv.getClients().remove(this);
     }
 }

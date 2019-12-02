@@ -6,7 +6,12 @@ import java.net.Socket;
 import java.util.Vector;
 
 public class MainServ {
+
     private Vector<ClientHandler> clients;
+
+    public Vector<ClientHandler> getClients() {
+        return clients;
+    }
 
     public MainServ() {
         clients = new Vector<>();
@@ -26,12 +31,14 @@ public class MainServ {
             e.printStackTrace();
         } finally {
             try {
-                socket.close();
+                if (socket != null)
+                    socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
             try {
-                server.close();
+                if (server != null)
+                    server.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -43,4 +50,6 @@ public class MainServ {
             o.sendMsg(msg);
         }
     }
+
+
 }
