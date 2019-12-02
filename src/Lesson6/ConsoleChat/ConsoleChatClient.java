@@ -31,6 +31,7 @@ public class ConsoleChatClient {
                             if (srt.equals("/serverClosed")){
                                 break;
                             }
+                            System.out.println(srt);
                         }
                     } catch (SocketException e) {
                         System.out.println("Сокет сервера был закрыт.");
@@ -55,11 +56,6 @@ public class ConsoleChatClient {
             e.printStackTrace();
         } finally {
             System.out.println("Завершаем работу...");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             try {
                 if(socket != null)
                     socket.close();
