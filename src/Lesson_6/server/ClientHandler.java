@@ -26,7 +26,6 @@ public class ClientHandler {
                             String msg = in.readUTF();
                             if (msg.equals("/end")) {
                                 out.writeUTF("/serverClosed");
-                                thisClient.remove();
                                 System.out.println("Клиент отключился!");
                                 break;
                             }
@@ -35,6 +34,7 @@ public class ClientHandler {
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
+                        thisClient.remove();
                         try {
                             in.close();
                         } catch (IOException e) {
