@@ -44,12 +44,12 @@ public class ConsoleChatServer {
 
             String outMsg;
             Scanner scanner = new Scanner(System.in);
-            while (!(outMsg = scanner.nextLine()).toLowerCase().equals("/end")) {
-                try {
+            try {
+                while (!(outMsg = scanner.nextLine()).toLowerCase().equals("/end")) {
                     outStream.writeUTF(outMsg);
-                } catch (SocketException e) {
-                    System.out.println("Сокет клиента был закрыт.");
                 }
+            } catch (SocketException e) {
+                System.out.println("Сокет клиента был закрыт.");
             }
 
             outStream.writeUTF("/serverClosed");
