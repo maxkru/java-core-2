@@ -1,4 +1,4 @@
-package Lesson6.ConsoleChat;
+package Lesson_6.ConsoleChat;
 
 import java.io.*;
 import java.net.ServerSocket;
