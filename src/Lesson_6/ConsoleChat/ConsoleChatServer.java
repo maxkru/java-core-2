@@ -52,7 +52,11 @@ public class ConsoleChatServer {
                 System.out.println("Сокет клиента был закрыт.");
             }
 
-            outStream.writeUTF("/serverClosed");
+            try {
+                outStream.writeUTF("/serverClosed");
+            } catch (SocketException ignored) {
+
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
