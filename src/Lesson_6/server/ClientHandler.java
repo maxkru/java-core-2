@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 public class ClientHandler {
     private Socket socket;
@@ -47,7 +48,14 @@ public class ClientHandler {
                                 out.writeUTF("/serverClosed");
                                 break;
                             }
-                            serv.broadcastMsg(nick + " " + msg);
+                            if (isWhisper(msg)) {
+                                String[] msgSplit = msg.split(" ", 3);
+                                String nickTo = msgSplit[1];
+                                String msgBody = msgSplit[2];
+                                serv.privateMsg(ClientHandler.this, nickTo, msgBody);
+                            } else {
+                                serv.broadcastMsg(nick + ": " + msg);
+                            }
                         }
 
                     } catch (IOException e) {
@@ -84,4 +92,9 @@ public class ClientHandler {
             e.printStackTrace();
         }
     }
+
+    private static boolean isWhisper(String msg) {
+        return Pattern.matches("^(/w )(\\w+)( )(.*)$", msg);
+    }
+
 }

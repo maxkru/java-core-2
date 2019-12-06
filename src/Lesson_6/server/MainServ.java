@@ -49,6 +49,26 @@ public class MainServ {
         }
     }
 
+    public void privateMsg(ClientHandler clientFrom, String nickTo, String msg) {
+        if (nickTo.equals(clientFrom.nick)) {
+            clientFrom.sendMsg("Server: \'" + nickTo + "\' is you.");
+        } else {
+            boolean result = false;
+            for (ClientHandler candidate : clients) {
+                if (candidate.nick.equals(nickTo)) {
+                    candidate.sendMsg("(p) " + clientFrom.nick + ": " + msg);
+                    clientFrom.sendMsg("(to " + nickTo + "): " + msg);
+                    result = true;
+                    break;
+                }
+            }
+
+            if (!result) {
+                clientFrom.sendMsg("Server: no such user \'" + nickTo + "\' online.");
+            }
+        }
+    }
+
     public void subscribe(ClientHandler client) {
         clients.add(client);
     }
