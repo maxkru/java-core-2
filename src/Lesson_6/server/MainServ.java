@@ -51,7 +51,7 @@ public class MainServ {
 
     public void privateMsg(ClientHandler clientFrom, String nickTo, String msg) {
         if (nickTo.equals(clientFrom.nick)) {
-            clientFrom.sendMsg("Server: \'" + nickTo + "\' is you.");
+            clientFrom.sendMsg("Сервер: \'" + nickTo + "\' - это ваш ник");
         } else {
             boolean result = false;
             for (ClientHandler candidate : clients) {
@@ -64,7 +64,7 @@ public class MainServ {
             }
 
             if (!result) {
-                clientFrom.sendMsg("Server: no such user \'" + nickTo + "\' online.");
+                clientFrom.sendMsg("Сервер: пользователя \'" + nickTo + "\' нет на сервере");
             }
         }
     }
@@ -75,5 +75,16 @@ public class MainServ {
 
     public void unsubscribe(ClientHandler client) {
         clients.remove(client);
+    }
+
+    public boolean isNickUsed(String nick) {
+        boolean result = false;
+        for (ClientHandler client : clients) {
+            if (client.nick.equals(nick)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 }

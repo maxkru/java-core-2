@@ -29,14 +29,15 @@ public class ClientHandler {
                             if (msg.startsWith("/auth")) {
                                 String[] tokens = msg.split(" ");
                                 String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
-                                if (newNick != null) {
+                                if (newNick == null) {
+                                    sendMsg("Неверный логин/пароль");
+                                } else if (!serv.isNickUsed(newNick)){
                                     sendMsg("/authok");
                                     nick = newNick;
                                     serv.subscribe(ClientHandler.this);
                                     break;
-                                }
-                                else {
-                                    sendMsg("Неверный логин/пароль");
+                                } else {
+                                    sendMsg("\'" + newNick + "\' уже авторизован");
                                 }
                             }
                         }
