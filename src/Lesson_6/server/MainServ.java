@@ -51,7 +51,7 @@ public class MainServ {
 
     public void privateMsg(ClientHandler clientFrom, String nickTo, String msg) {
         if (nickTo.equals(clientFrom.nick)) {
-            clientFrom.sendMsg("Сервер: \'" + nickTo + "\' - это ваш ник");
+            clientFrom.sendMsg("\'" + nickTo + "\' - это Ваш ник");
         } else {
             boolean result = false;
             for (ClientHandler candidate : clients) {
@@ -64,7 +64,7 @@ public class MainServ {
             }
 
             if (!result) {
-                clientFrom.sendMsg("Сервер: пользователя \'" + nickTo + "\' нет на сервере");
+                clientFrom.sendMsg("Пользователя \'" + nickTo + "\' нет на сервере");
             }
         }
     }

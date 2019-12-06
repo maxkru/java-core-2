@@ -49,11 +49,13 @@ public class ClientHandler {
                                 out.writeUTF("/serverClosed");
                                 break;
                             }
-                            if (isWhisper(msg)) {
+                            if (msg.startsWith("/w ")) {
                                 String[] msgSplit = msg.split(" ", 3);
-                                String nickTo = msgSplit[1];
-                                String msgBody = msgSplit[2];
-                                serv.privateMsg(ClientHandler.this, nickTo, msgBody);
+                                if ( msgSplit.length == 3 && !msgSplit[2].isEmpty() ) {
+                                    serv.privateMsg(ClientHandler.this, msgSplit[1], msgSplit[2]);
+                                } else {
+                                    ClientHandler.this.sendMsg("Синтаксис команды /w: \'/w ник сообщение\'");
+                                }
                             } else {
                                 serv.broadcastMsg(nick + ": " + msg);
                             }
@@ -92,10 +94,6 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static boolean isWhisper(String msg) {
-        return Pattern.matches("^(/w )(\\w+)( )(.*)$", msg);
     }
 
 }
