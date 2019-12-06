@@ -8,8 +8,9 @@ public class AuthService {
 
     public static void connect() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:main.db");
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/chat_users?" +
+                    "user=chat-server&password=XgVbEF4vTzP!R&serverTimezone=Europe/Moscow");
             stmt = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();
