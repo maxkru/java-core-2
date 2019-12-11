@@ -1,6 +1,7 @@
 package ru.geekbrains.chat.server;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class AuthService {
     private static Connection connection;
@@ -32,14 +33,9 @@ public class AuthService {
 
     public static String getNickByLoginAndPass(String login, String pass) {
         try {
-            ResultSet rs = stmt.executeQuery("SELECT nickname, password FROM users WHERE login = '" + login + "'");
-            int myHash = pass.hashCode(); // 137
+            ResultSet rs = stmt.executeQuery("SELECT nickname FROM users WHERE login = '" + login + "' AND password = '" + pass + "';");
             if (rs.next()) {
-                String nick = rs.getString(1);
-                int dbHash = rs.getInt(2);
-                if (myHash == dbHash) {
-                    return nick;
-                }
+                return rs.getString(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,4 +50,68 @@ public class AuthService {
             e.printStackTrace();
         }
     }
+
+    public static boolean toggleNickInClientsBlacklistInDatabase(ClientHandler client, String blockedNick) throws NoSuchUserInDBException {
+        /* возвращает, блокируется ли теперь пользователь */
+        boolean result = false;
+        try {
+            ResultSet rs1 = stmt.executeQuery("SELECT id FROM users WHERE nickname = \'" + blockedNick + "\';");
+            if (rs1.next()) {
+                // такой ник есть
+                int blocked_id = rs1.getInt(1);
+                ResultSet rs2 = stmt.executeQuery("SELECT id FROM users WHERE nickname = \'" + client.getNick() + "\';");
+                rs2.next();
+                int user_id = rs2.getInt(1);
+                ResultSet rs3 = stmt.executeQuery("SELECT * FROM blacklist WHERE (user_id = " + user_id + ") AND (blocked_id = " + blocked_id + ");");
+                if (rs3.next()) {
+                    // пользователь уже заблокирован, разблокируем
+                    String query = "DELETE FROM blacklist WHERE (user_id = ?) AND (blocked_id = ?);";
+                    PreparedStatement ps = connection.prepareStatement(query);
+                    ps.setInt(1, user_id);
+                    ps.setInt(2, blocked_id);
+                    ps.executeUpdate();
+                    System.out.println("BL: " + client.getNick() + " добавил " + blockedNick);
+                    result = false;
+                } else {
+                    // пользователь не заблокирован, блокируем
+                    String query = "INSERT INTO blacklist (user_id, blocked_id) VALUES (?, ?);";
+                    PreparedStatement ps = connection.prepareStatement(query);
+                    ps.setInt(1, user_id);
+                    ps.setInt(2, blocked_id);
+                    ps.executeUpdate();
+                    System.out.println("BL: " + client.getNick() + " удалил " + blockedNick);
+                    result = true;
+                }
+            } else {
+                // такого ника нет
+                throw new NoSuchUserInDBException("Не найден запрашиваемый ник");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static ArrayList<String> fetchBlacklistForNick(String nick) throws NoSuchUserInDBException {
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            ResultSet rs1 = stmt.executeQuery("SELECT id FROM users WHERE nickname = \'" + nick + "\';");
+            if (rs1.next()) {
+                int user_id = rs1.getInt(1);
+                ResultSet rs2 = stmt.executeQuery("SELECT nickname FROM blacklist " +
+                        "INNER JOIN users ON blacklist.blocked_id = users.id " +
+                        "WHERE blacklist.user_id = " + user_id);
+                while (rs2.next()) {
+                    list.add(rs2.getString("nickname"));
+                }
+            } else {
+                throw new NoSuchUserInDBException("No such nickname in database");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 }

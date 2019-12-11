@@ -26,7 +26,6 @@ public class ClientHandler {
             this.server = server;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
-            this.blackList = new ArrayList<>();
             new Thread(() -> {
                 try {
                     while (true) {
@@ -39,6 +38,11 @@ public class ClientHandler {
                                     sendMsg("/authok");
                                     nick = newNick;
                                     server.subscribe(this);
+                                    try {
+                                        this.blackList = AuthService.fetchBlacklistForNick(nick);
+                                    } catch (NoSuchUserInDBException e) {
+                                        e.printStackTrace();
+                                    }
                                     break;
                                 } else {
                                     sendMsg("Учетная запись уже используется");
@@ -62,8 +66,24 @@ public class ClientHandler {
                             }
                             if (str.startsWith("/blacklist ")) { // /blacklist nick3
                                 String[] tokens = str.split(" ");
-                                blackList.add(tokens[1]);
-                                sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
+                                if (tokens.length > 1 && !tokens[1].isEmpty()) {
+                                    String nickToBL = tokens[1];
+                                    try {
+                                        if (nickToBL.equals(this.nick)) {
+                                            sendMsg("Нельзя добавить самого себя в черный список");
+                                        } else {
+                                            if (AuthService.toggleNickInClientsBlacklistInDatabase(this, nickToBL)) {
+                                                blackList.add(nickToBL);
+                                                sendMsg("Вы добавили пользователя \'" + tokens[1] + "\' в черный список");
+                                            } else {
+                                                blackList.remove(nickToBL);
+                                                sendMsg("Вы удалили пользователя \'" + tokens[1] + "\' из черного списка");
+                                            }
+                                        }
+                                    } catch (NoSuchUserInDBException e) {
+                                        sendMsg("Такого пользователя не существует");
+                                    }
+                                }
                             }
                         } else {
                             server.broadcastMsg(this, nick + ": " + str);
