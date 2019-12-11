@@ -87,6 +87,17 @@ public class ClientHandler {
                                     }
                                 }
                             }
+                            if (str.startsWith("/register")) {
+                                String[] tokens = str.split(" ");
+                                if (tokens.length > 3) {
+                                    try {
+                                        DatabaseHandler.addUser(tokens[1], tokens[2], tokens[3]);
+                                        sendMsg("Создан пользователь с ником \'" + tokens[3]  + "\', логином \'" + tokens[1] + "\' и паролем \'" + tokens[2] + '\'');
+                                    } catch (BadCredentialException e) {
+                                        sendMsg(e.getMessage());
+                                    }
+                                }
+                            }
                         } else {
                             server.broadcastMsg(this, nick + ": " + str);
                         }

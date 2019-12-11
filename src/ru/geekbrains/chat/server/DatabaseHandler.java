@@ -2,6 +2,7 @@ package ru.geekbrains.chat.server;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class DatabaseHandler {
     private static Connection connection;
@@ -18,14 +19,35 @@ public class DatabaseHandler {
         }
     }
 
-    public static void addUser(String login, String pass, String nick) {
+    public static void addUser(String login, String password, String nick) throws BadCredentialException {
+        if (!Pattern.matches("^[\\d\\p{Lower}\\p{Upper}]{3,20}$", login))
+            throw new BadCredentialException("login", "Логин должен состоять из латинских букв и цифр и быть от 3 до 20 символов длиной");
+        if (!Pattern.matches("^[\\d\\p{Lower}\\p{Upper}]{5,32}$", password))
+            throw new BadCredentialException("password", "Пароль должен состоять из латинских букв и цифр и быть от 5 до 32 символов длиной");
+        if (!Pattern.matches("^[\\d\\p{Lower}\\p{Upper}]{3,20}$", nick))
+            throw new BadCredentialException("password", "Никнейм должен состоять из латинских букв и цифр и быть от 3 до 20 символов длиной");
+
         try {
-            String query = "INSERT INTO users (login, password, nickname) VALUES (?, ?, ?);";
-            PreparedStatement ps = connection.prepareStatement(query);
+            String queryCheckIfOccupied = "SELECT login, nickname FROM users WHERE login = ? OR nickname = ?;";
+            PreparedStatement ps = connection.prepareStatement(queryCheckIfOccupied);
             ps.setString(1, login);
-            ps.setInt(2, pass.hashCode());
-            ps.setString(3, nick);
-            ps.executeUpdate();
+            ps.setString(2, nick);
+            ResultSet rs = ps.executeQuery();
+
+            if(!rs.next()) {
+                String query = "INSERT INTO users (login, password, nickname) VALUES (?, ?, ?);";
+                ps = connection.prepareStatement(query);
+                ps.setString(1, login);
+                ps.setString(2, password);
+                ps.setString(3, nick);
+                ps.executeUpdate();
+            } else {
+                if(login.equals(rs.getString("login")))
+                    throw new BadCredentialException("login", "Этот логин уже используется");
+                else
+                    throw new BadCredentialException("nickname", "Этот никнейм уже используется");
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
