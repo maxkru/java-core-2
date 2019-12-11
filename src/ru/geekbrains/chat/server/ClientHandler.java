@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ClientHandler {
@@ -32,14 +31,14 @@ public class ClientHandler {
                         String str = in.readUTF();
                         if (str.startsWith("/auth")) { // /auth login72 pass72
                             String[] tokens = str.split(" ");
-                            String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
+                            String newNick = DatabaseHandler.getNickByLoginAndPass(tokens[1], tokens[2]);
                             if (newNick != null) {
                                 if (!server.isNickBusy(newNick)) {
                                     sendMsg("/authok");
                                     nick = newNick;
                                     server.subscribe(this);
                                     try {
-                                        this.blackList = AuthService.fetchBlacklistForNick(nick);
+                                        this.blackList = DatabaseHandler.fetchBlacklistForNick(nick);
                                     } catch (NoSuchUserInDBException e) {
                                         e.printStackTrace();
                                     }
@@ -72,7 +71,7 @@ public class ClientHandler {
                                         if (nickToBL.equals(this.nick)) {
                                             sendMsg("Нельзя добавить самого себя в черный список");
                                         } else {
-                                            if (AuthService.toggleNickInClientsBlacklistInDatabase(this, nickToBL)) {
+                                            if (DatabaseHandler.toggleNickInClientsBlacklistInDatabase(this, nickToBL)) {
                                                 blackList.add(nickToBL);
                                                 sendMsg("Вы добавили пользователя \'" + tokens[1] + "\' в черный список");
                                             } else {

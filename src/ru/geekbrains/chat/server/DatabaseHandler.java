@@ -3,7 +3,7 @@ package ru.geekbrains.chat.server;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class AuthService {
+public class DatabaseHandler {
     private static Connection connection;
     private static Statement stmt;
 
