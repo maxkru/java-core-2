@@ -1,7 +1,6 @@
 package ru.geekbrains.chat.client;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -17,9 +16,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class Controller implements Initializable {
     @FXML
@@ -41,7 +38,7 @@ public class Controller implements Initializable {
     PasswordField passwordField;
 
     @FXML
-    ListView<String> clientsList;
+    ListView<String> clientsListView;
 
     Socket socket;
     DataInputStream in;
@@ -54,11 +51,16 @@ public class Controller implements Initializable {
 
     List<TextArea> textAreas;
 
+    private ArrayList<String> clients;
+    private ArrayList<String> blacklist;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setAuthorized(false);
         textAreas = new ArrayList<>();
         textAreas.add(chatArea);
+        clients = new ArrayList<>();
+        blacklist = new ArrayList<>();
     }
 
     public void setAuthorized(boolean isAuthorized) {
@@ -68,15 +70,15 @@ public class Controller implements Initializable {
             upperPanel.setManaged(true);
             bottomPanel.setVisible(false);
             bottomPanel.setManaged(false);
-            clientsList.setVisible(false);
-            clientsList.setManaged(false);
+            clientsListView.setVisible(false);
+            clientsListView.setManaged(false);
         } else {
             upperPanel.setVisible(false);
             upperPanel.setManaged(false);
             bottomPanel.setVisible(true);
             bottomPanel.setManaged(true);
-            clientsList.setVisible(true);
-            clientsList.setManaged(true);
+            clientsListView.setVisible(true);
+            clientsListView.setManaged(true);
         }
     }
 
@@ -105,11 +107,22 @@ public class Controller implements Initializable {
                             if (str.equals("/serverclosed")) break;
                             if (str.startsWith("/clientslist ")) {
                                 String[] tokens = str.split(" ");
+                                clients.clear();
+                                for (int i = 1; i < tokens.length; i++) {
+                                    clients.add(tokens[i]);
+                                }
                                 Platform.runLater(() -> {
-                                    clientsList.getItems().clear();
-                                    for (int i = 1; i < tokens.length; i++) {
-                                        clientsList.getItems().add(tokens[i]);
-                                    }
+                                    updateClientListView();
+                                });
+                            }
+                            if (str.startsWith("/blacklisted ")) {
+                                String[] tokens = str.split(" ");
+                                blacklist.clear();
+                                for (int i = 1; i < tokens.length; i++) {
+                                    blacklist.add(tokens[i]);
+                                }
+                                Platform.runLater(() -> {
+                                    updateClientListView();
                                 });
                             }
                         } else {
@@ -131,6 +144,16 @@ public class Controller implements Initializable {
             thread.start();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateClientListView() {
+        clientsListView.getItems().clear();
+        for (String s: clients) {
+            if (blacklist.contains(s))
+                clientsListView.getItems().add(s + " (b)");
+            else
+                clientsListView.getItems().add(s);
         }
     }
 
@@ -159,8 +182,14 @@ public class Controller implements Initializable {
 
     public void selectClient(MouseEvent mouseEvent) {
         if(mouseEvent.getClickCount() == 2) {
-            MiniStage ms = new MiniStage(clientsList.getSelectionModel().getSelectedItem(), out, textAreas);
+            MiniStage ms = new MiniStage(clientsListView.getSelectionModel().getSelectedItem(), out, textAreas);
             ms.show();
+        }
+    }
+
+    private void applyBlacklist() {
+        for (int i = 0; i < clientsListView.getItems().size(); i++) {
+
         }
     }
 }

@@ -36,12 +36,13 @@ public class ClientHandler {
                                 if (!server.isNickBusy(newNick)) {
                                     sendMsg("/authok");
                                     nick = newNick;
-                                    server.subscribe(this);
                                     try {
                                         this.blackList = DatabaseHandler.fetchBlacklistForNick(nick);
                                     } catch (NoSuchUserInDBException e) {
                                         e.printStackTrace();
                                     }
+                                    sendBlacklist();
+                                    server.subscribe(this);
                                     break;
                                 } else {
                                     sendMsg("Учетная запись уже используется");
@@ -74,9 +75,11 @@ public class ClientHandler {
                                             if (DatabaseHandler.toggleNickInClientsBlacklistInDatabase(this, nickToBL)) {
                                                 blackList.add(nickToBL);
                                                 sendMsg("Вы добавили пользователя \'" + tokens[1] + "\' в черный список");
+                                                sendBlacklist();
                                             } else {
                                                 blackList.remove(nickToBL);
                                                 sendMsg("Вы удалили пользователя \'" + tokens[1] + "\' из черного списка");
+                                                sendBlacklist();
                                             }
                                         }
                                     } catch (NoSuchUserInDBException e) {
@@ -125,5 +128,14 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendBlacklist() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("/blacklisted ");
+        for (String o : blackList) {
+            sb.append(o).append(" ");
+        }
+        sendMsg(sb.toString());
     }
 }

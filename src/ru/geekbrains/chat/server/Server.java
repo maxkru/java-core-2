@@ -74,7 +74,7 @@ public class Server {
         StringBuilder sb = new StringBuilder();
         sb.append("/clientslist ");
         for (ClientHandler o : clients) {
-            sb.append(o.getNick() + " ");
+            sb.append(o.getNick()).append(" ");
         }
         String out = sb.toString();
         for (ClientHandler o : clients) {

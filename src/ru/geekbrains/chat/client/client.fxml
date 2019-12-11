@@ -22,7 +22,7 @@
                 <Button onAction="#sendMsg" text="Отправить" />
             </HBox>
         </VBox>
-        <ListView fx:id="clientsList" onMouseClicked="#selectClient" prefWidth="200" />
+        <ListView fx:id="clientsListView" onMouseClicked="#selectClient" prefWidth="200" />
     </HBox>
 
 
